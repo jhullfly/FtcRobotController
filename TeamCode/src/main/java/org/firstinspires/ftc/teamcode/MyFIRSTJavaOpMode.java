@@ -60,9 +60,12 @@ public class MyFIRSTJavaOpMode extends LinearOpMode {
                 frontLeft.setPower(0);
                 backLeft.setPower(0);
                 backRight.setPower(0);
+                time = System.currentTimeMillis();
             }
             telemetry.addData("Status", "Running");
+            telemetry.addData("time", sinceStart);
             telemetry.update();
+
 
         }
     }
