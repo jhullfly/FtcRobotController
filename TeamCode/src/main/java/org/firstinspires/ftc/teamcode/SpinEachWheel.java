@@ -22,8 +22,14 @@ public class SpinEachWheel extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
         imu = hardwareMap.get(IMU.class, "imu");
+
+        // Initialization for NEW robot
+        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Initialization for OLD robot
+        //backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         telemetry.addData("Status", "Initialized");
         telemetry.update();
