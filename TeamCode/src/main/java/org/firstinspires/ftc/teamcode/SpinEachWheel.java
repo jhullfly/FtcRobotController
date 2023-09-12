@@ -6,8 +6,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.IMU;
 
-@TeleOp(name = "MyFIRSTJavaOpMode", group = "learning")
-public class MyFIRSTJavaOpMode extends LinearOpMode {
+@TeleOp(name = "SpinEachWheel", group = "learning")
+public class SpinEachWheel extends LinearOpMode {
     private DcMotor frontRight;
     private DcMotor frontLeft;
     private DcMotor backLeft;
