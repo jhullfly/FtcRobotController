@@ -28,9 +28,14 @@ public class SimpleStrafeDrive extends LinearOpMode {
         backRight = hardwareMap.get(DcMotor.class, "back_right");
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
 
-        // initialization for NEW robot
+        // Initialization for NEW robot
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+
+        // Initialization for OLD robot
+        //backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
         // Put initialization blocks here.
         waitForStart();
         if (opModeIsActive()) {
