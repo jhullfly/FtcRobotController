@@ -23,9 +23,14 @@ public class FancyStrafe extends LinearOpMode {
         frontLeft = hardwareMap.get(DcMotor.class, "front_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
+        // Initialization for NEW robot
         backRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-        // Put initialization blocks here.
+
+        // Initialization for OLD robot
+//        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+
         waitForStart();
         if (opModeIsActive()) {
             // Put run blocks here.

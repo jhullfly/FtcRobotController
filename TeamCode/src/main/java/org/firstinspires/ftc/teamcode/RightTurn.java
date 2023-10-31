@@ -5,6 +5,8 @@ import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.RobotConfigNameable;
+
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
@@ -27,6 +29,7 @@ public class RightTurn extends LinearOpMode {
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
         imu = hardwareMap.get(IMU.class, "imu");
         imu.resetYaw();
+        imu.getConnectionInfo();
 
         // Initialization for NEW robot
 //        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
@@ -45,19 +48,12 @@ public class RightTurn extends LinearOpMode {
                 YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
                 AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
                 double yaw = orientation.getYaw(AngleUnit.DEGREES);
-                telemetry.addData("Yaw (Z)", "%.2f Deg. (Heading)", orientation.getYaw(AngleUnit.DEGREES));
-                telemetry.addData("Pitch (X)", "%.2f Deg.", orientation.getPitch(AngleUnit.DEGREES));
-                telemetry.addData("Roll (Y)", "%.2f Deg.\n", orientation.getRoll(AngleUnit.DEGREES));
-                telemetry.addData("Yaw (Z) velocity", "%.2f Deg/Sec", angularVelocity.zRotationRate);
-                telemetry.addData("Pitch (X) velocity", "%.2f Deg/Sec", angularVelocity.xRotationRate);
-                telemetry.addData("Roll (Y) velocity", "%.2f Deg/Sec", angularVelocity.yRotationRate);
-                telemetry.update();
                 double speed = 0.3;
                 if (yaw<88) {
-                    frontRight.setPower(-1*speed);
-                    frontLeft.setPower(speed);
-                    backRight.setPower(-1*speed);
-                    backLeft.setPower(speed);
+//                    frontRight.setPower(-1*speed);
+//                    frontLeft.setPower(speed);
+//                    backRight.setPower(-1*speed);
+//                    backLeft.setPower(speed);
                 }
                 else {
                     frontRight.setPower(0);
@@ -65,11 +61,15 @@ public class RightTurn extends LinearOpMode {
                     backRight.setPower(0);
                     backLeft.setPower(0);
                 }
+                if (imu instanceof RobotConfigNameable) {
+                    telemetry.addData("imu connection info", ((RobotConfigNameable)imu).getUserConfiguredName());
 
-                telemetry.addData("frontRight power", frontRight.getPower());
-                telemetry.addData("frontLeft power", frontLeft.getPower());
-                telemetry.addData("backRight power", backRight.getPower());
-                telemetry.addData("backLeft power", backLeft.getPower());
+                }
+                telemetry.addData("imu connection info", imu.getConnectionInfo());
+                telemetry.addData("imu version", imu.getVersion());
+                telemetry.addData("imu device name", imu.getDeviceName());
+                telemetry.addData("motor connection info", frontLeft.getConnectionInfo());
+                telemetry.addData("motor device name", frontLeft.getDeviceName());
                 telemetry.update();
             }
         }
