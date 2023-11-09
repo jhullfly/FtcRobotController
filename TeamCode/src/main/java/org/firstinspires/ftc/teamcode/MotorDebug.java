@@ -23,23 +23,29 @@ public class MotorDebug extends LinearOpMode {
         frontLeft = hardwareMap.get(DcMotor.class, "front_left");
         backRight = hardwareMap.get(DcMotor.class, "back_right");
         backLeft = hardwareMap.get(DcMotor.class, "back_left");
-
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //Right ones for main robot {
+        //frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        //frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        // backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        //   }
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         waitForStart();
         while (opModeIsActive()) {
             //directions
             int target = 0;
             if (gamepad1.a) {
                 frontRight.setPower(0.3);
+                telemetry.addData("motor","frontRight");
             } else if (gamepad1.b) {
                 frontLeft.setPower(0.3);
+                telemetry.addData("motor","frontLeft");
             } else if (gamepad1.x) {
                 backRight.setPower(0.3);
+                telemetry.addData("motor","backRight");
             } else if (gamepad1.y) {
                 backLeft.setPower(0.3);
+                telemetry.addData("motor","backLeft");
             } else {
                 frontLeft.setPower(0);
                 backLeft.setPower(0);
@@ -47,6 +53,11 @@ public class MotorDebug extends LinearOpMode {
                 backRight.setPower(0);
             }
             telemetry.update();
+            //sticking our your gyatt for the rizzler
+            //your so skibidi your so fanum tax
+            //i just wanna be your sigma
+            //freaking come here
+            //give me your ohio
         }
     }
 }
