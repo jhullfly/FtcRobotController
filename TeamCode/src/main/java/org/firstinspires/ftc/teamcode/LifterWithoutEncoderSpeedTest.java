@@ -1,11 +1,14 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 @TeleOp(name = "LifterWithoutEncoderSpeedTest", group="learning")
+@Disabled
+
 public class LifterWithoutEncoderSpeedTest extends LinearOpMode {
     private DcMotor lifter;
     private ElapsedTime runtime = new ElapsedTime();

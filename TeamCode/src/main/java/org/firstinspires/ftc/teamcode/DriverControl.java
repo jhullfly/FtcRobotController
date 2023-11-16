@@ -6,10 +6,9 @@ import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
-import com.sun.tools.javac.tree.DCTree;
-
-@TeleOp(name = "LifterRunToTest", group="learning")
-public class LifterRunToTest extends LinearOpMode {
+//programmed by jeffery
+@TeleOp(name = "DriverControl", group="sigma")
+public class DriverControl extends LinearOpMode {
     private DcMotor lifter;
     private ElapsedTime runtime = new ElapsedTime();
     private CRServo servo;
@@ -42,32 +41,32 @@ public class LifterRunToTest extends LinearOpMode {
         lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         servo = hardwareMap.get(CRServo.class, "Claw");
-
+        boolean fastMode=false;
+        //that's the fast mode ;)
         waitForStart();
         while (opModeIsActive()) {
             //directions
+            telemetry.addData("ᠻꪖᦓꪻꪑꪮᦔꫀ ꪮꪀ：☞︎︎",fastMode);
+            telemetry.addData("F̴̮͈̥̩̈́̋́͋͆ã̶̡̨͈̞̦̹̯̮̿̾̽͠s̵̮̩͕̠͖̺̉̾́̎̇͝t̵̡̧̗̖͍̖̳͌͑͠m̴̡̠̭͕͖̎̋̊̈̔̿̈̌̚o̶͈̽͂͋̂̏̀͝d̵̛̖͉̯̜̊̆̀͐͌̂̃̑͠e̸̢̠̦̪̘̦̮̥͌̈́ ̶̬͒͑̂͌͆͋̆̍͐͋ͅơ̶̳̪̩̆́̀̅̽n̸̤̊̈́̈́͂͘:̴̡̛̯̙̥̥̖̂̐̈̓̆̽̐͝:",fastMode);
             int target = 0;
             if (gamepad1.a) {
-                lifter.setTargetPosition(270);
+                lifter.setTargetPosition(2749);
                 lifter.setPower(-0.6);
                 lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             } else if (gamepad1.b) {
-                if (lifter.getCurrentPosition() < 190) {
-                    lifter.setTargetPosition(190);
+                    lifter.setTargetPosition(2251);
                     lifter.setPower(0.4);
                     lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-                } else {
-                    lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                    lifter.setPower(-0.25);
-                }
+
             } else if (gamepad1.x) {
                 lifter.setTargetPosition(377);
                 lifter.setPower(-0.0);
                 lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
+
             else {
                 lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                lifter.setPower(-0.25);
+                lifter.setPower(0);
             }
 
             if (gamepad1.left_bumper) {
@@ -110,3 +109,13 @@ public class LifterRunToTest extends LinearOpMode {
         }
     }
 }
+
+
+
+
+//@jeffery
+//sticking our your gyatt for the rizzler
+//your so skibidi your so fanum tax
+//i just wanna be your sigma
+//freaking come here
+//give me your ohio

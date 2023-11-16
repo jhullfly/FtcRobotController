@@ -21,6 +21,7 @@
 
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 
@@ -39,6 +40,8 @@ import org.openftc.easyopencv.OpenCvPipeline;
  * original Android camera API
  */
 @TeleOp(name = "InternalCamera1Example", group="learning")
+@Disabled
+
 public class InternalCamera1Example extends LinearOpMode
 {
     OpenCvCamera phoneCam;

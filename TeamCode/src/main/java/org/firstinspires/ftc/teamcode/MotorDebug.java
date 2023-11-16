@@ -13,7 +13,7 @@ public class MotorDebug extends LinearOpMode {
     private DcMotor frontLeft;
     private DcMotor backLeft;
     private DcMotor backRight;
-
+    boolean fastMode=false;
     /**
      * This function is executed when this Op Mode is selected from the Driver Station.
      */
@@ -52,6 +52,7 @@ public class MotorDebug extends LinearOpMode {
                 frontRight.setPower(0);
                 backRight.setPower(0);
             }
+
             telemetry.update();
             //sticking our your gyatt for the rizzler
             //your so skibidi your so fanum tax
