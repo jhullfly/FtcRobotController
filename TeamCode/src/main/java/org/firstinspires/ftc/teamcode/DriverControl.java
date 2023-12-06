@@ -13,7 +13,7 @@ public class DriverControl extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private CRServo servo;
     private double CLAW_POWER = 0.5;
-
+    private CRServo air;
     private DcMotor frontRight;
     private DcMotor frontLeft;
     private DcMotor backLeft;
@@ -41,44 +41,62 @@ public class DriverControl extends LinearOpMode {
         lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
         servo = hardwareMap.get(CRServo.class, "Claw");
+        air = hardwareMap.get(CRServo.class, "air");
+        boolean isLaunched = false;
         boolean fastMode=false;
         //that's the fast mode ;)
         waitForStart();
         while (opModeIsActive()) {
             //directions
-            telemetry.addData("ᠻꪖᦓꪻꪑꪮᦔꫀ ꪮꪀ：☞︎︎",fastMode);
-            telemetry.addData("F̴̮͈̥̩̈́̋́͋͆ã̶̡̨͈̞̦̹̯̮̿̾̽͠s̵̮̩͕̠͖̺̉̾́̎̇͝t̵̡̧̗̖͍̖̳͌͑͠m̴̡̠̭͕͖̎̋̊̈̔̿̈̌̚o̶͈̽͂͋̂̏̀͝d̵̛̖͉̯̜̊̆̀͐͌̂̃̑͠e̸̢̠̦̪̘̦̮̥͌̈́ ̶̬͒͑̂͌͆͋̆̍͐͋ͅơ̶̳̪̩̆́̀̅̽n̸̤̊̈́̈́͂͘:̴̡̛̯̙̥̥̖̂̐̈̓̆̽̐͝:",fastMode);
             int target = 0;
+            if (gamepad1.left_bumper) {
+                fastMode=true;
+            } else {
+                fastMode=false;
+                    telemetry.addLine("left bumper for fast mode!");
+
+                }
             if (gamepad1.a) {
                 lifter.setTargetPosition(2749);
                 lifter.setPower(-0.6);
                 lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             } else if (gamepad1.b) {
-                    lifter.setTargetPosition(2251);
+                    lifter.setTargetPosition(2089);
                     lifter.setPower(0.4);
                     lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
             } else if (gamepad1.x) {
-                lifter.setTargetPosition(377);
-                lifter.setPower(-0.0);
+                lifter.setTargetPosition(3200);
+                lifter.setPower(-0.1);
                 lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
             }
 
             else {
                 lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                lifter.setPower(0);
+                lifter.setPower(-0.075);
             }
 
-            if (gamepad1.left_bumper) {
+            if (gamepad1.left_trigger>.3) {
                 telemetry.addLine("DOWN");
                 servo.setDirection(DcMotorSimple.Direction.REVERSE);
                 servo.setPower(CLAW_POWER);
-            } else if (gamepad1.right_bumper) {
+            } else if (gamepad1.right_trigger>.3) {
                 telemetry.addLine("UP");
                 servo.setDirection(DcMotorSimple.Direction.FORWARD);
                 servo.setPower(CLAW_POWER);
             }
+            telemetry.addData("air portNumber", air.getPortNumber());
+            if (gamepad1.right_bumper) {
 
+                telemetry.addLine("launched!");
+                air.setDirection(DcMotorSimple.Direction.REVERSE);
+                air.setPower(0.5);
+
+            }
+            else {
+                telemetry.addLine("right bumper for drone launch!");
+                air.setPower(0);
+            }
 
             double x = -gamepad1.right_stick_x; // Remember, this is reversed!
             double y = gamepad1.right_stick_y * 1.1; // Counteract imperfect strafing
@@ -94,21 +112,30 @@ public class DriverControl extends LinearOpMode {
             double backRightPower = (y + x - rx) / denominator;
             double slowness = (.3);
 
+                if (fastMode) {
+                    slowness=.7;
+                }
+
+
             frontLeft.setPower(frontLeftPower * slowness);
             backLeft.setPower(backLeftPower * slowness);
             frontRight.setPower(frontRightPower * slowness);
             backRight.setPower(backRightPower * slowness);
-
             telemetry.addData("y ",y);
             telemetry.addData("x ",x);
             telemetry.addData("rx ",rx);
             telemetry.addData("Power ",lifter.getPower());
             telemetry.addData("Power ",lifter.getPower());
             telemetry.addData("Position ",lifter.getCurrentPosition());
+            telemetry.addData("fastMode",fastMode);
             telemetry.update();
+
+        }
+
+
         }
     }
-}
+
 
 
 
@@ -119,3 +146,7 @@ public class DriverControl extends LinearOpMode {
 //i just wanna be your sigma
 //freaking come here
 //give me your ohio
+
+//@spenca
+//i loves eminom
+//lirics comin soper sonig sped
