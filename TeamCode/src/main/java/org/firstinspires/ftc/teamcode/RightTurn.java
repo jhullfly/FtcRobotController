@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -11,6 +12,7 @@ import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 import org.firstinspires.ftc.robotcore.external.navigation.AngularVelocity;
 import org.firstinspires.ftc.robotcore.external.navigation.YawPitchRollAngles;
 @TeleOp(name = "RightTurn", group = "learning")
+@Disabled
 public class RightTurn extends LinearOpMode {
 
     private DcMotor frontRight;
@@ -32,28 +34,28 @@ public class RightTurn extends LinearOpMode {
         imu.getConnectionInfo();
 
         // Initialization for NEW robot
-//        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-//        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+        frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
+        backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Initialization for OLD robot
-        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
-        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        backRight.setDirection(DcMotorSimple.Direction.REVERSE);
+//        frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
 
         // Put initialization blocks here.
-        waitForStart();
+
         if (opModeIsActive()) {
             // Put run blocks here.
             while (opModeIsActive()) {
                 // Put loop blocks here.
                 YawPitchRollAngles orientation = imu.getRobotYawPitchRollAngles();
-                AngularVelocity angularVelocity = imu.getRobotAngularVelocity(AngleUnit.DEGREES);
                 double yaw = orientation.getYaw(AngleUnit.DEGREES);
-                double speed = 0.3;
-                if (yaw<88) {
-//                    frontRight.setPower(-1*speed);
-//                    frontLeft.setPower(speed);
-//                    backRight.setPower(-1*speed);
-//                    backLeft.setPower(speed);
+                double speed = 0.2;
+                if (yaw>-88) {
+                    frontRight.setPower(-1*speed);
+                    frontLeft.setPower(speed);
+                    backRight.setPower(-1*speed);
+                    backLeft.setPower(speed);
                 }
                 else {
                     frontRight.setPower(0);
@@ -61,15 +63,7 @@ public class RightTurn extends LinearOpMode {
                     backRight.setPower(0);
                     backLeft.setPower(0);
                 }
-                if (imu instanceof RobotConfigNameable) {
-                    telemetry.addData("imu connection info", ((RobotConfigNameable)imu).getUserConfiguredName());
-
-                }
-                telemetry.addData("imu connection info", imu.getConnectionInfo());
-                telemetry.addData("imu version", imu.getVersion());
-                telemetry.addData("imu device name", imu.getDeviceName());
-                telemetry.addData("motor connection info", frontLeft.getConnectionInfo());
-                telemetry.addData("motor device name", frontLeft.getDeviceName());
+                telemetry.addData("yaw", yaw);
                 telemetry.update();
             }
         }

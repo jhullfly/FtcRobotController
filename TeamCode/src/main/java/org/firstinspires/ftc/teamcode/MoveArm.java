@@ -19,8 +19,8 @@ public class MoveArm extends OpMode {
         arm1 = hardwareMap.get(DcMotor.class, "front_right");
         arm1.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         arm1.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    
-    ;}
+
+    }
     @Override
     public void loop(){
         // elevate Arm1 if B is pressed, lower if A is pressed

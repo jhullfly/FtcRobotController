@@ -16,8 +16,8 @@ public class Claw3 extends LinearOpMode {
   private DcMotor frontLeft;
   private DcMotor backLeft;
   private DcMotor backRight;
-  private Boolean driving = false;
-  private double CLAW_POWER = 0.5;
+  private final Boolean driving = false;
+  private final double CLAW_POWER = 0.5;
    
   @Override
   public void runOpMode() {

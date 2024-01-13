@@ -12,7 +12,7 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 public class Claw extends LinearOpMode {
 
     private CRServo servo;
-    private double CLAW_POWER = 0.5;
+    private final double CLAW_POWER = 0.5;
 
     @Override
     public void runOpMode() {

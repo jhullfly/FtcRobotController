@@ -7,21 +7,22 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-//programmed by jeffery
-@TeleOp(name = "DriverControl2Driver", group="sigma")
+@TeleOp(name = "DriverControl2Driver", group="acompetition")
 public class DriverControl2Drivers extends LinearOpMode {
-    private DcMotor lifter;
-    private ElapsedTime runtime = new ElapsedTime();
-    private CRServo servo;
-    private double CLAW_POWER = 0.5;
+    private DcMotor arm;
+    private final ElapsedTime runtime = new ElapsedTime();
+    private CRServo claw;
+    private final double CLAW_POWER = 0.5;
     private CRServo air;
     private DcMotor frontRight;
     private DcMotor frontLeft;
     private DcMotor backLeft;
     private DcMotor backRight;
+    private DcMotor lifter;
 
-
-    static final double     COUNTS_PER_MOTOR_REV    = 537.6 ;    // eg: TETRIX Motor Encoder
+    static final int ON_THE_BOARD    = 1410;
+    static final int TOUCHING_GROUND    = 1939;
+    static final int ABOVE_GROUND    = 1867;
 
     /**
      * This function is executed when this Op Mode is selected from the Driver Station.
@@ -37,11 +38,16 @@ public class DriverControl2Drivers extends LinearOpMode {
         frontRight.setDirection(DcMotorSimple.Direction.REVERSE);
         frontLeft.setDirection(DcMotorSimple.Direction.REVERSE);
         backLeft.setDirection(DcMotorSimple.Direction.REVERSE);
-
-        lifter = hardwareMap.get(DcMotor.class, "arm");
+        //lifter
+        lifter = hardwareMap.get(DcMotor.class, "lifter");
         lifter.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
         lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-        servo = hardwareMap.get(CRServo.class, "Claw");
+        lifter.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        arm = hardwareMap.get(DcMotor.class, "arm");
+        arm.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        arm.setZeroPowerBehavior(DcMotor.ZeroPowerBehavior.BRAKE);
+        claw = hardwareMap.get(CRServo.class, "Claw");
         air = hardwareMap.get(CRServo.class, "air");
         boolean isLaunched = false;
         boolean fastMode=false;
@@ -50,52 +56,62 @@ public class DriverControl2Drivers extends LinearOpMode {
         while (opModeIsActive()) {
             //directions
             int target = 0;
+            if (gamepad2.x) {
+                lifter.setPower(-1.0);
+                lifter.setTargetPosition(-22500);
+                lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                telemetry.addLine("lifter is moving up  ");
+            } else if (gamepad2.y) {
+                lifter.setPower(1.0);
+                lifter.setTargetPosition(0);
+                lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                telemetry.addLine("lifter is moving down ");
+
+            } else {
+                lifter.setPower(0);
+                lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                telemetry.addLine("lifter up is player 2 x, y is down ");
+            }
+            telemetry.addData("Position ", lifter.getCurrentPosition());
             if (gamepad1.left_trigger>.3) {
                 fastMode=true;
             } else {
                 fastMode=false;
-                    telemetry.addLine("left bumper for fast mode!");
-
-                }
-            if (gamepad1.a) {
-                lifter.setTargetPosition(2749);
-                lifter.setPower(-0.6);
-                lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-            } else if (gamepad1.b) {
-                    lifter.setTargetPosition(2089);
-                    lifter.setPower(0.4);
-                    lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
-            } else if (gamepad1.x) {
-                lifter.setTargetPosition(3200);
-                lifter.setPower(-0.1);
-                lifter.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+                telemetry.addLine("left bumper for fast mode!");
             }
-
-            else {
-                lifter.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-                lifter.setPower(-0.075);
+            if (gamepad1.a) {
+                arm.setTargetPosition(ABOVE_GROUND);
+                arm.setPower(-0.6);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            } else if (gamepad1.b) {
+                arm.setTargetPosition(ON_THE_BOARD);
+                arm.setPower(0.4);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            } else if (gamepad1.x) {
+                arm.setTargetPosition(TOUCHING_GROUND);
+                arm.setPower(-0.1);
+                arm.setMode(DcMotor.RunMode.RUN_TO_POSITION);
+            } else {
+                arm.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+                arm.setPower(-0.075);
             }
 
             if (gamepad2.left_trigger>.3) {
                 telemetry.addLine("DOWN");
-                servo.setDirection(DcMotorSimple.Direction.REVERSE);
-                servo.setPower(CLAW_POWER);
+                claw.setDirection(DcMotorSimple.Direction.REVERSE);
+                claw.setPower(CLAW_POWER);
             } else if (gamepad2.right_trigger>.3) {
                 telemetry.addLine("UP");
-                servo.setDirection(DcMotorSimple.Direction.FORWARD);
-                servo.setPower(CLAW_POWER);
+                claw.setDirection(DcMotorSimple.Direction.FORWARD);
+                claw.setPower(CLAW_POWER);
             }
-            telemetry.addData("air portNumber", air.getPortNumber());
             if (gamepad2.a && gamepad2.b) {
-
                 telemetry.addLine("launched!");
                 air.setDirection(DcMotorSimple.Direction.REVERSE);
                 air.setPower(0.5);
-
             }
             else {
-                telemetry.addLine("right bumper for drone launch!");
+                telemetry.addLine("gamepad2 A and B for drone launch");
                 air.setPower(0);
             }
 
@@ -113,9 +129,9 @@ public class DriverControl2Drivers extends LinearOpMode {
             double backRightPower = (y + x - rx) / denominator;
             double slowness = (.3);
 
-                if (fastMode) {
-                    slowness=.7;
-                }
+            if (fastMode) {
+                slowness=.7;
+            }
 
 
             frontLeft.setPower(frontLeftPower * slowness);
@@ -125,29 +141,14 @@ public class DriverControl2Drivers extends LinearOpMode {
             telemetry.addData("y ",y);
             telemetry.addData("x ",x);
             telemetry.addData("rx ",rx);
-            telemetry.addData("Power ",lifter.getPower());
-            telemetry.addData("Power ",lifter.getPower());
-            telemetry.addData("Position ",lifter.getCurrentPosition());
+            telemetry.addData("Power ", arm.getPower());
+            telemetry.addData("Position ", arm.getCurrentPosition());
             telemetry.addData("fastMode",fastMode);
             telemetry.update();
 
         }
 
 
-        }
     }
+}
 
-
-
-
-
-//@jeffery
-//sticking our your gyatt for the rizzler
-//your so skibidi your so fanum tax
-//i just wanna be your sigma
-//freaking come here
-//give me your ohio
-
-//@spenca
-//i loves eminom
-//lirics comin soper sonig sped

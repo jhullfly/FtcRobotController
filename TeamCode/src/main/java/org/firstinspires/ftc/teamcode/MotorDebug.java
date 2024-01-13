@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -7,7 +8,8 @@ import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-@TeleOp(name = "MotorDebug", group="learning")
+@TeleOp(name = "MotorDebug", group="testing")
+@Disabled
 public class MotorDebug extends LinearOpMode {
     private DcMotor frontRight;
     private DcMotor frontLeft;
@@ -54,11 +56,6 @@ public class MotorDebug extends LinearOpMode {
             }
 
             telemetry.update();
-            //sticking our your gyatt for the rizzler
-            //your so skibidi your so fanum tax
-            //i just wanna be your sigma
-            //freaking come here
-            //give me your ohio
         }
     }
 }

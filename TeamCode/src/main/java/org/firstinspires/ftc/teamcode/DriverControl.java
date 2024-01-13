@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.CRServo;
@@ -8,11 +9,12 @@ import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 //programmed by jeffery
 @TeleOp(name = "DriverControl", group="sigma")
+@Disabled
 public class DriverControl extends LinearOpMode {
     private DcMotor lifter;
-    private ElapsedTime runtime = new ElapsedTime();
+    private final ElapsedTime runtime = new ElapsedTime();
     private CRServo servo;
-    private double CLAW_POWER = 0.5;
+    private final double CLAW_POWER = 0.5;
     private CRServo air;
     private DcMotor frontRight;
     private DcMotor frontLeft;
