@@ -27,14 +27,14 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-package org.firstinspires.ftc.robotcontroller.external.samples;
+package org.firstinspires.ftc.teamcode;
 
 import com.acmerobotics.dashboard.config.Config;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
+
 import org.firstinspires.ftc.robotcore.external.hardware.camera.BuiltinCameraDirection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.WebcamName;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
@@ -85,20 +85,25 @@ import java.util.concurrent.TimeUnit;
  *
  */
 @Config
-@Disabled
-@TeleOp(name="Tank Drive To AprilTag", group = "Concept")
-public class RobotAutoDriveToAprilTagTank extends LinearOpMode
+@TeleOp(name="AutoDrive")
+public class AutoDrive extends LinearOpMode
 {
     // Adjust these numbers to suit your robot.
-    public static double DESIRED_DISTANCE = 10.0; //  this is how close the camera should get to the target (inches)
+    public static double DESIRED_DISTANCE = 5; //  this is how close the camera should get to the target (inches)
 
     //  Set the GAIN constants to control the relationship between the measured position error, and how much power is
     //  applied to the drive motors to correct the error.
     //  Drive = Error * Gain    Make these values smaller for smoother control, or larger for a more aggressive response.
-    public static double SPEED_GAIN =   0.05 ;   //  Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
+    public static double SPEED_GAIN =   0.1 ;   //  Speed Control "Gain". eg: Ramp up to 50% power at a 25 inch error.   (0.50 / 25.0)
     public static double TURN_GAIN  =   0.01 ;   //  Turn Control "Gain".  eg: Ramp up to 25% power at a 25 degree error. (0.25 / 25.0)
+    public static double ROTATE_SPEED  =   0.25 ;   //
+    public static double SlOW_ROTATE_SPEED  =   0.15 ;   //
 
-    public static double MAX_AUTO_SPEED = 0.4;   //  Clip the approach speed to this max value (adjust for your robot)
+    public static double RANGE_ERROR  =   1.5 ;   //
+    public static int CAMERA_GAIN  =   50 ;   //
+    public static int CAMERA_EXPOSURE_MS  =   2 ;   //
+
+    public static double MAX_AUTO_SPEED = 0.5;   //  Clip the approach speed to this max value (adjust for your robot)
     public static double MAX_AUTO_TURN  = 0.15;  //  Clip the turn speed to this max value (adjust for your robot)
 
     private DcMotor leftDrive   = null;  //  Used to control the left drive wheel
@@ -116,7 +121,7 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
         double  drive           = 0;        // Desired forward power/speed (-1 to +1) +ve is forward
         double  turn            = 0;        // Desired turning power/speed (-1 to +1) +ve is CounterClockwise
         int desiredTagId = 1;
-        boolean rotate = false;
+        boolean rotate = true;
 
         // Initialize the Apriltag Detection process
         initAprilTag();
@@ -134,7 +139,7 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
         rightDrive.setDirection(DcMotor.Direction.FORWARD);
 
         if (USE_WEBCAM)
-            setManualExposure(6, 250);  // Use low exposure time to reduce motion blur
+            setManualExposure(CAMERA_EXPOSURE_MS, CAMERA_GAIN);  // Use low exposure time to reduce motion blur
 
         // Wait for the driver to press Start
         telemetry.addData("Camera preview on/off", "3 dots, Camera Stream");
@@ -153,7 +158,7 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
                 // Look to see if we have size info on this tag.
                 if (detection.metadata != null) {
                     //  Check to see if we want to track towards this tag.
-                    if ((DESIRED_TAG_ID < 0) || (detection.id == desiredTagId)) {
+                    if ((desiredTagId < 0) || (detection.id == desiredTagId)) {
                         // Yes, we want to use this tag.
                         targetFound = true;
                         desiredTag = detection;
@@ -161,10 +166,12 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
                     } else {
                         // This tag is in the library, but we do not want to track it right now.
                         telemetry.addData("Skipping", "Tag ID %d is not desired", detection.id);
+                        telemetry.addData("Range",  "%5.1f inches", detection.ftcPose.range);
                     }
                 } else {
                     // This tag is NOT in the library, so we don't have enough information to track to it.
                     telemetry.addData("Unknown", "Tag ID %d is not in TagLibrary", detection.id);
+
                 }
             }
 
@@ -172,10 +179,16 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
             if (targetFound) {
                 telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
                 telemetry.addData("Found", "ID %d", desiredTag.id);
+                telemetry.addData("Looking for", "ID %d", desiredTagId);
                 telemetry.addData("Range",  "%5.1f inches", desiredTag.ftcPose.range);
                 telemetry.addData("Bearing","%3.0f degrees", desiredTag.ftcPose.bearing);
             } else {
-                telemetry.addData("\n>","Drive using joysticks to find valid target\n");
+                telemetry.addData("\n>","HOLD Left-Bumper to Drive to Target\n");
+                telemetry.addData("Looking for", "ID %d", desiredTagId);
+            }
+            if (gamepad1.y) {
+                rotate = true;
+                desiredTagId = 1;
             }
 
             // If Left Bumper is being pressed, AND we have found the desired target, Drive to target Automatically .
@@ -183,29 +196,53 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
 
                 // Determine heading and range error so we can use them to control the robot automatically.
                 double rangeError = (desiredTag.ftcPose.range - DESIRED_DISTANCE);
+                if (desiredTagId == 7 ){
+                    rangeError = (desiredTag.ftcPose.range - 15);
+                }
+                if (desiredTagId == 8 ) {
+                    rangeError = (desiredTag.ftcPose.range - 4);
+                }
+                if (desiredTagId == 4){
+                    rangeError = (desiredTag.ftcPose.range - 6);
+                }
+                if (desiredTagId == 5){
+                    rangeError = (desiredTag.ftcPose.range - 7);
+                }
+
+
                 double headingError = desiredTag.ftcPose.bearing;
-                if (rangeError < 0.5) {
-                    desiredTagId = 2;
+                if (Math.abs(rangeError) < RANGE_ERROR) {
+                    desiredTagId = (desiredTagId%8)+1;
                     rotate = true;
                 } else {
                     // Use the speed and turn "gains" to calculate how we want the robot to move.  Clip it to the maximum
                     drive = Range.clip(rangeError * SPEED_GAIN, -MAX_AUTO_SPEED, MAX_AUTO_SPEED);
                     turn = Range.clip(headingError * TURN_GAIN, -MAX_AUTO_TURN, MAX_AUTO_TURN);
                 }
-                telemetry.addLine("target, and !rotating");
+                telemetry.addLine("target found, and not rotating");
                 telemetry.addData("Auto", "Drive %5.2f, Turn %5.2f", drive, turn);
                 telemetry.addData("rotate", rotate);
+                telemetry.addData("rangeError", rangeError);
                 telemetry.addData("desiredTagId", desiredTagId);
             } else if (gamepad1.left_bumper && (!targetFound && rotate)) {
                 drive = 0;
-                turn = 0.05;
-                telemetry.addLine("!no target, and rotating");
+                turn = ROTATE_SPEED;
+                if (desiredTagId == 6 ) {
+                    turn = ROTATE_SPEED * -1;
+                }
+                if (desiredTagId == 7){
+                    turn = ROTATE_SPEED * -1;
+                }
+                if (desiredTagId == 4){
+                    turn = SlOW_ROTATE_SPEED;
+                }
+                telemetry.addLine("no target, and rotating");
                 telemetry.addData("Auto", "Drive %5.2f, Turn %5.2f", drive, turn);
                 telemetry.addData("rotate", rotate);
                 telemetry.addData("desiredTagId", desiredTagId);
             } else if (gamepad1.left_bumper && (targetFound && rotate)) {
                 rotate = false;
-                telemetry.addLine("!no target,  rotating");
+                telemetry.addLine("target found,  rotating");
                 telemetry.addData("Auto", "Drive %5.2f, Turn %5.2f", drive, turn);
                 telemetry.addData("rotate", rotate);
                 telemetry.addData("desiredTagId", desiredTagId);
@@ -316,6 +353,9 @@ public class RobotAutoDriveToAprilTagTank extends LinearOpMode
             GainControl gainControl = visionPortal.getCameraControl(GainControl.class);
             gainControl.setGain(gain);
             sleep(20);
+            telemetry.addData("Camera", "Ready");
+            telemetry.addData("gain min", gainControl.getMinGain());
+            telemetry.addData("gain max", gainControl.getMaxGain());
             telemetry.addData("Camera", "Ready");
             telemetry.update();
         }
